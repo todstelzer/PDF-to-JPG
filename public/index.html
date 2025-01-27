@@ -53,12 +53,18 @@
             position: relative;
         }
         .drop-zone:hover {
-            background-color: #f8f9fa;
+            background: linear-gradient(135deg, #f8f9fa, #e0e0e0);
             border-color: #1557b0;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* Enhanced shadow */
+            transform: translateY(-2px) scale(1.02); /* Slight lift and scale effect */
+            transition: all 0.3s ease; /* Smooth transition */
         }
         .drop-zone.dragover {
             background-color: #e8f0fe;
             border-color: #1557b0;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add shadow */
+            transform: translateY(-2px); /* Slight lift effect */
+            transition: all 0.3s ease; /* Smooth transition */
         }
         .drop-zone input[type="file"] {
             display: none;
@@ -80,6 +86,9 @@
         }
         .drop-zone-button:hover {
             background-color: #1557b0;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add shadow */
+            transform: translateY(-2px); /* Slight lift effect */
+            transition: all 0.3s ease; /* Smooth transition */
         }
         .file-info {
             margin-bottom: 10px;  /* Reduced margin-top by 0.5rem (10px) */
@@ -110,6 +119,9 @@
         }
         .browse-btn:hover {
             background-color: #1557b0;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add shadow */
+            transform: translateY(-2px); /* Slight lift effect */
+            transition: all 0.3s ease; /* Smooth transition */
         }
         .output-path {
             width: 100%;
@@ -133,6 +145,9 @@
         }
         .convert-btn:hover {
             background-color: #1557b0;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add shadow */
+            transform: translateY(-2px); /* Slight lift effect */
+            transition: all 0.3s ease; /* Smooth transition */
         }
         .convert-btn.converting {
             background-color: #34a853;  /* Google green color */
@@ -226,7 +241,7 @@
         }
         .change-default-btn:hover {
             background-color: #1557b0;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
             transform: translateY(-1px);
         }
         .change-default-btn:active {
