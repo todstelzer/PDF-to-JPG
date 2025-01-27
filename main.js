@@ -64,7 +64,7 @@ expressApp.post('/convert', upload.single('pdf'), (req, res) => {
             console.log(`Stdout: ${stdout}`);
 
             fs.unlinkSync(inputPath);
-            res.send('Conversion successful! Check output folder.');
+            res.send('Conversion successful!');
         });
     } catch (error) {
         console.error(error);
@@ -108,8 +108,8 @@ ipcMain.handle('set-auto-convert', (event, value) => {
 
 function createWindow() {
     mainWindow = new BrowserWindow({
-        width: 580,              // Reduced from 800 to fit content
-        height: 620,             // Adjusted to fit elements
+        width: 460,              // Reduced from 580 to 430 (150px less)
+        height: 630,             // Keep height the same
         webPreferences: {
             nodeIntegration: true,
             contextIsolation: true,  // Enable context isolation

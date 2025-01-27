@@ -20,7 +20,7 @@
             height: 100vh;    /* Full viewport height */
             background: #ffffff;
             padding: 2rem;
-            margin: 0;        /* Remove margin */
+            margin-top: 70px;        /* Remove margin */
             position: relative;
             box-shadow: none; /* Remove shadow */
             border-radius: 0; /* Remove border radius */
@@ -31,7 +31,7 @@
             gap: 1rem; /* Add consistent spacing between elements */
         }
         form {
-            width: 500px;     /* Keep form width fixed */
+            width: 350px;     /* Reduced from 500px to 350px */
         }
         h1 {
             color: #1a73e8;
@@ -82,12 +82,14 @@
             background-color: #1557b0;
         }
         .file-info {
-            margin-top: 1rem;
+            margin-bottom: 10px;  /* Reduced margin-top by 0.5rem (10px) */
             text-align: center;
             color: #1a73e8;
-            display: none;
-            font-size: 1.4rem;  /* Increased from base size */
-            font-weight: 500;   /* Make it slightly bold */
+            display: block;  /* Always display block */
+            visibility: hidden;  /* Hide initially */
+            height: 1.4rem;  /* Fixed height to prevent shifting */
+            font-size: 1.4rem;
+            font-weight: 500;
         }
         .path-container {
             display: flex;
@@ -135,21 +137,28 @@
             cursor: wait;
         }
         #status {
-            margin-top: 0.5rem; /* More compact */
+            margin-top: 0rem;  /* Reduced margin-top by 0.5rem (10px) */
             text-align: center;
             padding: 0.6rem 1rem;  /* Reduced vertical padding, kept horizontal padding */
             border-radius: 8px;
-            display: none;
-            font-size: 1.2rem;  /* Increased from 0.85rem */
+            display: block;  /* Always display block */
+            visibility: hidden;  /* Hide initially */
+            height: 2.8rem;  /* Fixed height to prevent shifting */
+            font-size: 1.3rem;  /* Increased font size by 1 */
             min-height: 2.8rem; /* Reduced min-height */
             opacity: 0; /* Hide but keep space */
-            transition: opacity 0.3s ease; /* Smooth fade in/out */
+            transition: opacity 0.3s ease, visibility 0s 0.3s;  /* Smooth fade in/out */
             width: 92%;  /* Slightly narrower than parent to create margin */
             margin-left: auto;
             margin-right: auto;
+            display: flex;  /* Use flexbox for centering */
+            align-items: center;  /* Center vertically */
+            justify-content: center;  /* Center horizontally */
         }
         #status.visible {
             opacity: 1;
+            visibility: visible;  /* Show when visible */
+            transition: opacity 0.3s ease;
         }
         .success {
             background-color: #e6f4ea;
@@ -168,10 +177,10 @@
             align-items: center;
             gap: 1rem;
             margin-top: auto; /* Push to bottom */
-            margin-bottom: 40px; /* Add margin-bottom to shift up by 80px */
-            padding-top: 1rem;
+            margin-bottom: 100px; /* Add margin-bottom to shift up by 80px */
+            padding-top: 0.1rem;
             text-align: center;  /* Added for better centering */
-            width: 500px; /* Match form width */
+            width: 350px;     /* Reduced from 500px to 350px */
         }
         .default-path-row {
             display: flex;
@@ -252,7 +261,7 @@
             <div class="default-path-row">
                 <button class="change-default-btn" id="changeDefaultBtn">
                     <span>📁</span>
-                    <span>Change Default Path</span>
+                    <span>Default Path</span>
                 </button>
                 <div class="auto-convert-container">
                     <input type="checkbox" id="autoConvert" class="auto-convert-checkbox">
@@ -315,7 +324,7 @@
         async function handleFiles(e) {
             const file = e.target.files[0];
             if (file && file.type === 'application/pdf') {
-                fileInfo.style.display = 'block';
+                fileInfo.style.visibility = 'visible';  /* Show file info */
                 fileInfo.textContent = `Selected: ${file.name}`;
                 fileInput.files = e.target.files;
 
@@ -345,11 +354,11 @@
                 });
                 const result = await response.text();
                 
-                status.style.display = 'block';
+                status.style.visibility = 'visible';  /* Show status */
                 if (response.ok) {
                     status.className = 'success visible';
                     // Reset file info and input
-                    fileInfo.style.display = 'none';
+                    fileInfo.style.visibility = 'hidden';
                     fileInfo.textContent = '';
                     fileInput.value = '';
                 } else {
@@ -361,13 +370,13 @@
                     setTimeout(() => {
                         status.classList.remove('visible');
                         setTimeout(() => {
-                            status.style.display = 'none';
+                            status.style.visibility = 'hidden';
                             status.textContent = '';
                         }, 300); // Wait for fade out
                     }, 10000);
                 }
             } catch (error) {
-                status.style.display = 'block';
+                status.style.visibility = 'visible';  /* Show status */
                 status.className = 'error visible';
                 status.textContent = 'Error: ' + error.message;
             } finally {
