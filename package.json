@@ -1,6 +1,6 @@
 {
   "name": "pdf-to-jpg",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "main": "main.js",
   "author": {
     "name": "Uwe Soell",
