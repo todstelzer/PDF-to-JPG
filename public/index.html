@@ -28,6 +28,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            gap: 1rem; /* Add consistent spacing between elements */
         }
         form {
             width: 500px;     /* Keep form width fixed */
@@ -136,10 +137,19 @@
         #status {
             margin-top: 0.5rem; /* More compact */
             text-align: center;
-            padding: 1rem;
+            padding: 0.6rem 1rem;  /* Reduced vertical padding, kept horizontal padding */
             border-radius: 8px;
             display: none;
             font-size: 1.2rem;  /* Increased from 0.85rem */
+            min-height: 2.8rem; /* Reduced min-height */
+            opacity: 0; /* Hide but keep space */
+            transition: opacity 0.3s ease; /* Smooth fade in/out */
+            width: 92%;  /* Slightly narrower than parent to create margin */
+            margin-left: auto;
+            margin-right: auto;
+        }
+        #status.visible {
+            opacity: 1;
         }
         .success {
             background-color: #e6f4ea;
@@ -157,8 +167,11 @@
             flex-direction: column;
             align-items: center;
             gap: 1rem;
-            margin-top: 1.5rem;
+            margin-top: auto; /* Push to bottom */
+            margin-bottom: 40px; /* Add margin-bottom to shift up by 80px */
+            padding-top: 1rem;
             text-align: center;  /* Added for better centering */
+            width: 500px; /* Match form width */
         }
         .default-path-row {
             display: flex;
@@ -334,25 +347,28 @@
                 
                 status.style.display = 'block';
                 if (response.ok) {
-                    status.className = 'success';
+                    status.className = 'success visible';
                     // Reset file info and input
                     fileInfo.style.display = 'none';
                     fileInfo.textContent = '';
                     fileInput.value = '';
                 } else {
-                    status.className = 'error';
+                    status.className = 'error visible';
                 }
                 status.textContent = result;
 
                 if (response.ok) {
                     setTimeout(() => {
-                        status.style.display = 'none';
-                        status.textContent = '';
+                        status.classList.remove('visible');
+                        setTimeout(() => {
+                            status.style.display = 'none';
+                            status.textContent = '';
+                        }, 300); // Wait for fade out
                     }, 10000);
                 }
             } catch (error) {
                 status.style.display = 'block';
-                status.className = 'error';
+                status.className = 'error visible';
                 status.textContent = 'Error: ' + error.message;
             } finally {
                 // Reset button state
