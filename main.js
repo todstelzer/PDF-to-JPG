@@ -33,7 +33,7 @@ expressApp.get('/defaultPath', (req, res) => {
 
 expressApp.post('/convert', upload.single('pdf'), (req, res) => {
     try {
-        const defaultPath = path.join(os.homedir(), 'Downloads');
+        const defaultPath = settings.getDefaultOutputPath();
         const outputPath = req.body.folderPath || defaultPath;
         const inputPath = req.file.path;
         
@@ -65,6 +65,9 @@ expressApp.post('/convert', upload.single('pdf'), (req, res) => {
 
             fs.unlinkSync(inputPath);
             res.send('Conversion successful!');
+
+            // Update browse path with default path after conversion
+            settings.setBrowseOutputPath(defaultPath);
         });
     } catch (error) {
         console.error(error);
@@ -94,7 +97,11 @@ ipcMain.handle('select-folder', async () => {
     const result = await dialog.showOpenDialog({
         properties: ['openDirectory']
     });
-    return result.filePaths[0];
+    if (!result.canceled && result.filePaths[0]) {
+        settings.setBrowseOutputPath(result.filePaths[0]);
+        return result.filePaths[0];
+    }
+    return null;
 });
 
 // Add new IPC handlers before createWindow function

@@ -375,6 +375,9 @@
                     fileInfo.style.visibility = 'hidden';
                     fileInfo.textContent = '';
                     fileInput.value = '';
+                    // Update output path with default path
+                    const defaultPath = await window.electron.settings.getDefaultPath();
+                    document.getElementById('folderPath').value = defaultPath;
                 } else {
                     status.className = 'error visible';
                 }

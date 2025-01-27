@@ -18,8 +18,9 @@ class Settings {
         }
         return { 
             defaultOutputPath: path.join(os.homedir(), 'Downloads'),
+            browseOutputPath: '', // Add this line
             autoConvert: false,
-            alwaysOnTop: false  // Add this line
+            alwaysOnTop: false
         };
     }
 
@@ -37,6 +38,15 @@ class Settings {
 
     setDefaultOutputPath(path) {
         this.settings.defaultOutputPath = path;
+        this.saveSettings();
+    }
+
+    getBrowseOutputPath() {
+        return this.settings.browseOutputPath;
+    }
+
+    setBrowseOutputPath(path) {
+        this.settings.browseOutputPath = path;
         this.saveSettings();
     }
 
