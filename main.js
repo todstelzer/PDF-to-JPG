@@ -108,15 +108,15 @@ ipcMain.handle('set-auto-convert', (event, value) => {
 
 function createWindow() {
     mainWindow = new BrowserWindow({
-        width: 600,              // Reduced from 800 to fit content
-        height: 650,             // Adjusted to fit elements
+        width: 580,              // Reduced from 800 to fit content
+        height: 620,             // Adjusted to fit elements
         webPreferences: {
             nodeIntegration: true,
             contextIsolation: true,  // Enable context isolation
             preload: path.join(__dirname, 'preload.js')  // Add preload script
         },
         autoHideMenuBar: true,    // Hide the menu bar
-        frame: true,              // Keep window frame
+        frame: true, 
         minimizable: true,        // Allow minimize
         maximizable: false,       // Disable maximize since we want fixed size
         fullscreenable: false,    // Disable full screen

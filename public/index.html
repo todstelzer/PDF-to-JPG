@@ -5,7 +5,7 @@
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f0f2f5;
+            background-color: #ffffff;  /* Changed to white */
             color: #333;
             margin: 0;
             padding: 0;
@@ -16,13 +16,21 @@
             overflow: hidden;  /* Disable scrollbars */
         }
         .container {
-            width: 500px;      /* Fixed width */
+            width: 100vw;     /* Full viewport width */
+            height: 100vh;    /* Full viewport height */
             background: #ffffff;
             padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            margin: 0 auto;    /* Center horizontally */
+            margin: 0;        /* Remove margin */
             position: relative;
+            box-shadow: none; /* Remove shadow */
+            border-radius: 0; /* Remove border radius */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        form {
+            width: 500px;     /* Keep form width fixed */
         }
         h1 {
             color: #1a73e8;
@@ -118,6 +126,9 @@
             cursor: pointer;
             transition: all 0.3s ease;
         }
+        .convert-btn:hover {
+            background-color: #1557b0;
+        }
         .convert-btn.converting {
             background-color: #34a853;  /* Google green color */
             cursor: wait;
@@ -147,19 +158,20 @@
             align-items: center;
             gap: 1rem;
             margin-top: 1.5rem;
+            text-align: center;  /* Added for better centering */
         }
         .default-path-row {
             display: flex;
             align-items: center;
-            gap: 1rem;
+            justify-content: center;  /* Keep this centered */
             width: 100%;
-            justify-content: center;
+            gap: 4rem;  /* Reduced from 6rem to 4rem (approximately 40px less) */
         }
         .auto-convert-container {
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            margin-left: 1rem;
+            margin-right: auto;  /* This will push the container to the left */
         }
         .auto-convert-checkbox {
             width: 18px;
