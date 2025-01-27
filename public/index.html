@@ -236,6 +236,12 @@
         .settings-btn {
             display: none;  /* Hide the button instead of removing the style completely */
         }
+        .checkbox-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px; /* Add 5px gap between checkboxes */
+        }
     </style>
 </head>
 <body>
@@ -252,7 +258,7 @@
             <div class="path-container">
                 <input type="text" class="output-path" id="folderPath" name="folderPath" 
                        placeholder="Leave empty to use Downloads folder" readonly>
-                <button type="button" class="browse-btn" id="browseFolderBtn" title="Select Output Path">Browse</button>
+                <button type="button" class="browse-btn" id="browseFolderBtn" title="Select output path">Browse</button>
             </div>
             <button type="submit" class="convert-btn">Convert to JPG</button>
         </form>
@@ -265,9 +271,15 @@
                     <span>📁</span>
                     <span>Default Path</span>
                 </button>
-                <div class="auto-convert-container">
-                    <input type="checkbox" id="autoConvert" class="auto-convert-checkbox" title="Automatic batch processing">
-                    <label for="autoConvert" class="auto-convert-label">Automatic</label>
+                <div class="checkbox-container">
+                    <div class="auto-convert-container">
+                        <input type="checkbox" id="autoConvert" class="auto-convert-checkbox" title="Automatic batch processing">
+                        <label for="autoConvert" class="auto-convert-label">Automatic</label>
+                    </div>
+                    <div class="auto-convert-container">
+                        <input type="checkbox" id="alwaysOnTop" class="auto-convert-checkbox" title="Program is always on top">
+                        <label for="alwaysOnTop" class="auto-convert-label">On top</label>
+                    </div>
                 </div>
             </div>
         </div>
@@ -440,6 +452,21 @@
 
         // Initialize settings
         initAutoConvert();
+
+        // Add always on top functionality
+        const alwaysOnTopCheckbox = document.getElementById('alwaysOnTop');
+
+        async function initAlwaysOnTop() {
+            const isAlwaysOnTop = await window.electron.settings.getAlwaysOnTop();
+            alwaysOnTopCheckbox.checked = isAlwaysOnTop;
+        }
+
+        alwaysOnTopCheckbox.addEventListener('change', async (e) => {
+            await window.electron.settings.setAlwaysOnTop(e.target.checked);
+        });
+
+        // Call this with other initializations
+        initAlwaysOnTop();
     </script>
 </body>
 </html>

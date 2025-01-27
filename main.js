@@ -106,6 +106,16 @@ ipcMain.handle('set-auto-convert', (event, value) => {
     settings.setAutoConvert(value);
 });
 
+// Add new IPC handlers before createWindow function
+ipcMain.handle('get-always-on-top', () => {
+    return settings.getAlwaysOnTop();
+});
+
+ipcMain.handle('set-always-on-top', (event, value) => {
+    settings.setAlwaysOnTop(value);
+    mainWindow.setAlwaysOnTop(value);
+});
+
 function createWindow() {
     mainWindow = new BrowserWindow({
         width: 460,              // Reduced from 580 to 430 (150px less)
@@ -120,7 +130,8 @@ function createWindow() {
         minimizable: true,        // Allow minimize
         maximizable: false,       // Disable maximize since we want fixed size
         fullscreenable: false,    // Disable full screen
-        resizable: false          // Disable resizing for perfect fit
+        resizable: false,         // Disable resizing for perfect fit
+        alwaysOnTop: settings.getAlwaysOnTop()  // Add this line
     });
 
     // Remove menu bar completely

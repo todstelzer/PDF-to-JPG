@@ -18,7 +18,8 @@ class Settings {
         }
         return { 
             defaultOutputPath: path.join(os.homedir(), 'Downloads'),
-            autoConvert: false
+            autoConvert: false,
+            alwaysOnTop: false  // Add this line
         };
     }
 
@@ -45,6 +46,15 @@ class Settings {
 
     setAutoConvert(value) {
         this.settings.autoConvert = value;
+        this.saveSettings();
+    }
+
+    getAlwaysOnTop() {
+        return this.settings.alwaysOnTop;
+    }
+
+    setAlwaysOnTop(value) {
+        this.settings.alwaysOnTop = value;
         this.saveSettings();
     }
 }
