@@ -150,7 +150,7 @@
             min-height: 2.8rem; /* Reduced min-height */
             opacity: 0; /* Hide but keep space */
             transition: opacity 0.3s ease, visibility 0s 0.3s;  /* Smooth fade in/out */
-            width: 92%;  /* Slightly narrower than parent to create margin */
+            width: 82%;  /* Match the width of the Convert to JPG button */
             margin-left: auto;
             margin-right: auto;
             display: flex;  /* Use flexbox for centering */
@@ -252,7 +252,7 @@
             <div class="path-container">
                 <input type="text" class="output-path" id="folderPath" name="folderPath" 
                        placeholder="Leave empty to use Downloads folder" readonly>
-                <button type="button" class="browse-btn" id="browseFolderBtn">Browse</button>
+                <button type="button" class="browse-btn" id="browseFolderBtn" title="Select Output Path">Browse</button>
             </div>
             <button type="submit" class="convert-btn">Convert to JPG</button>
         </form>
@@ -261,12 +261,12 @@
         <div class="default-path-container">
             <span class="default-path-text" id="defaultPathDisplay"></span>
             <div class="default-path-row">
-                <button class="change-default-btn" id="changeDefaultBtn">
+                <button class="change-default-btn" id="changeDefaultBtn" title="Set default path">
                     <span>📁</span>
                     <span>Default Path</span>
                 </button>
                 <div class="auto-convert-container">
-                    <input type="checkbox" id="autoConvert" class="auto-convert-checkbox">
+                    <input type="checkbox" id="autoConvert" class="auto-convert-checkbox" title="Automatic batch processing">
                     <label for="autoConvert" class="auto-convert-label">Automatic</label>
                 </div>
             </div>
