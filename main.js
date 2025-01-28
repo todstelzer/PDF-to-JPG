@@ -87,6 +87,12 @@ expressApp.post('/convert', upload.array('pdf', 10), (req, res) => {
         }
 
         req.files.forEach(file => {
+            if (!file.originalname.toLowerCase().endsWith('.pdf')) {
+                console.log('Discarding non-PDF file:', file.originalname);
+                fs.unlinkSync(file.path);
+                return;
+            }
+
             const inputPath = file.path;
             const originalName = file.originalname.replace(/\.pdf$/i, '');
             const outputFilePattern = path.join(outputPath, originalName);
