@@ -31,44 +31,67 @@ expressApp.get('/defaultPath', (req, res) => {
     res.send(settings.getDefaultOutputPath());
 });
 
-expressApp.post('/convert', upload.single('pdf'), (req, res) => {
+let conversionQueue = [];
+let isConverting = false;
+
+function processQueue() {
+    if (conversionQueue.length === 0) {
+        isConverting = false;
+        return;
+    }
+
+    isConverting = true;
+    const { inputPath, outputPath, originalName, res } = conversionQueue.shift();
+    const popplerBinPath = app.isPackaged 
+        ? path.join(process.resourcesPath, 'poppler', 'bin')
+        : path.join(__dirname, 'poppler', 'bin');
+    const pdftoppmPath = path.join(popplerBinPath, 'pdftoppm.exe');
+    const outputFilePattern = path.join(outputPath, originalName);
+    
+    console.log('Starting conversion...', { inputPath, outputPath, originalName });
+    const command = `"${pdftoppmPath}" -jpeg "${inputPath}" "${outputFilePattern}"`;
+
+    exec(command, (error, stdout, stderr) => {
+        if (error) {
+            console.error(`Conversion error: ${error.message}`);
+            if (!res.headersSent) {
+                res.status(500).send('Conversion failed: ' + error.message);
+            }
+        } else {
+            if (stderr) {
+                console.error(`Stderr: ${stderr}`);
+            }
+            console.log(`Stdout: ${stdout}`);
+            fs.unlinkSync(inputPath);
+            if (!res.headersSent) {
+                res.send('Conversion successful!');
+            }
+            settings.setBrowseOutputPath(outputPath);
+        }
+        processQueue();
+    });
+}
+
+expressApp.post('/convert', upload.array('pdf', 10), (req, res) => {
     try {
         const defaultPath = settings.getDefaultOutputPath();
         const outputPath = req.body.folderPath || defaultPath;
-        const inputPath = req.file.path;
-        
-        // Get original filename without .pdf extension
-        const originalName = req.file.originalname.replace(/\.pdf$/i, '');
 
         if (!fs.existsSync(outputPath)) {
             fs.mkdirSync(outputPath, { recursive: true });
         }
 
-        const outputFilePattern = path.join(outputPath, originalName);
-        const popplerBinPath = app.isPackaged 
-            ? path.join(process.resourcesPath, 'poppler', 'bin')
-            : path.join(__dirname, 'poppler', 'bin');
-        const pdftoppmPath = path.join(popplerBinPath, 'pdftoppm.exe');
-        
-        console.log('Starting conversion...', { inputPath, outputPath, originalName });
-        const command = `"${pdftoppmPath}" -jpeg "${inputPath}" "${outputFilePattern}"`;
+        req.files.forEach(file => {
+            const inputPath = file.path;
+            const originalName = file.originalname.replace(/\.pdf$/i, '');
+            const outputFilePattern = path.join(outputPath, originalName);
 
-        exec(command, (error, stdout, stderr) => {
-            if (error) {
-                console.error(`Conversion error: ${error.message}`);
-                return res.status(500).send('Conversion failed: ' + error.message);
-            }
-            if (stderr) {
-                console.error(`Stderr: ${stderr}`);
-            }
-            console.log(`Stdout: ${stdout}`);
-
-            fs.unlinkSync(inputPath);
-            res.send('Conversion successful!');
-
-            // Update browse path with default path after conversion
-            settings.setBrowseOutputPath(defaultPath);
+            conversionQueue.push({ inputPath, outputPath, originalName, res });
         });
+
+        if (!isConverting) {
+            processQueue();
+        }
     } catch (error) {
         console.error(error);
         res.status(500).send('Conversion failed: ' + error.message);
