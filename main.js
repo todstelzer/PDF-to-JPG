@@ -50,6 +50,7 @@ function processQueue() {
     
     console.log('Starting conversion...', { inputPath, outputPath, originalName });
     const command = `"${pdftoppmPath}" -jpeg "${inputPath}" "${outputFilePattern}"`;
+    console.log(command);
 
     exec(command, (error, stdout, stderr) => {
         if (error) {
@@ -63,12 +64,16 @@ function processQueue() {
             }
             console.log(`Stdout: ${stdout}`);
             fs.unlinkSync(inputPath);
-            if (!res.headersSent) {
-                res.send('Conversion successful!');
-            }
             settings.setBrowseOutputPath(outputPath);
         }
-        processQueue();
+        if (conversionQueue.length === 0) {
+            if (!res.headersSent) {
+                res.send('All conversions successful!');
+            }
+            isConverting = false;
+        } else {
+            processQueue();
+        }
     });
 }
 
@@ -86,10 +91,12 @@ expressApp.post('/convert', upload.array('pdf', 10), (req, res) => {
             const originalName = file.originalname.replace(/\.pdf$/i, '');
             const outputFilePattern = path.join(outputPath, originalName);
 
+            console.log('Adding to queue:', { inputPath, outputPath, originalName });
             conversionQueue.push({ inputPath, outputPath, originalName, res });
         });
 
         if (!isConverting) {
+            console.log('Starting queue processing');
             processQueue();
         }
     } catch (error) {
