@@ -86,6 +86,8 @@ expressApp.post('/convert', upload.array('pdf', 10), (req, res) => {
             fs.mkdirSync(outputPath, { recursive: true });
         }
 
+        let hasValidFiles = false;
+
         req.files.forEach(file => {
             if (!file.originalname.toLowerCase().endsWith('.pdf')) {
                 console.log('Discarding non-PDF file:', file.originalname);
@@ -99,11 +101,14 @@ expressApp.post('/convert', upload.array('pdf', 10), (req, res) => {
 
             console.log('Adding to queue:', { inputPath, outputPath, originalName });
             conversionQueue.push({ inputPath, outputPath, originalName, res });
+            hasValidFiles = true;
         });
 
-        if (!isConverting) {
+        if (hasValidFiles && !isConverting) {
             console.log('Starting queue processing');
             processQueue();
+        } else if (!hasValidFiles) {
+            res.status(400).send('No valid PDF files to convert.');
         }
     } catch (error) {
         console.error(error);
