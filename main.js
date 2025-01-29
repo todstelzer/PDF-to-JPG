@@ -11,7 +11,12 @@ let mainWindow;
 
 // Create Express app
 const expressApp = express();
-const upload = multer({ dest: 'uploads/' });
+const upload = multer({
+    dest: 'uploads/',
+    limits: {
+        files: 50 // Increase the number of files allowed
+    }
+});
 
 // Configure Express routes
 expressApp.get('/', (req, res) => {
@@ -77,7 +82,7 @@ function processQueue() {
     });
 }
 
-expressApp.post('/convert', upload.array('pdf', 10), (req, res) => {
+expressApp.post('/convert', upload.array('pdf', 50), (req, res) => {
     try {
         const defaultPath = settings.getDefaultOutputPath();
         const outputPath = req.body.folderPath || defaultPath;
@@ -97,7 +102,7 @@ expressApp.post('/convert', upload.array('pdf', 10), (req, res) => {
                 return;
             }
         
-            if (file.originalname.toLowerCase().endsWith('.pdf')) {
+            if (file.originalname.toLowerCase().endsWith('.pdf') && !file.originalname.toLowerCase().endsWith('.exe')) {
                 const inputPath = file.path;
                 const originalName = file.originalname.replace(/\.pdf$/i, '');
                 const outputFilePattern = path.join(outputPath, originalName);
@@ -119,6 +124,9 @@ expressApp.post('/convert', upload.array('pdf', 10), (req, res) => {
         }
     } catch (error) {
         console.error(error);
+        if (error instanceof multer.MulterError) {
+            return res.status(400).send('Too many files uploaded. Maximum is 50 files.');
+        }
         res.status(500).send('Conversion failed: ' + error.message);
     }
 });
@@ -200,6 +208,20 @@ function createWindow() {
     });
 }
 
+expressApp.use((err, req, res, next) => {
+    console.error('Error occurred:', err.message);
+    console.error('Stack trace:', err.stack);
+    res.status(500).send('Internal Server Error');
+});
+
+// Add error handling middleware
+expressApp.use((error, req, res, next) => {
+    if (error instanceof multer.MulterError) {
+        return res.status(400).send('File upload error: ' + error.message);
+    }
+    next(error);
+});
+
 app.whenReady().then(() => {
     // Start Express server first
     expressApp.listen(3000, () => {
@@ -207,6 +229,13 @@ app.whenReady().then(() => {
         // Then create the window
         createWindow();
     });
+});
+
+app.on('activate', () => {
+    // On macOS re-create a window when dock icon is clicked and no other windows exist
+    if (BrowserWindow.getAllWindows().length === 0) {
+        createWindow();
+    }
 });
 
 app.on('window-all-closed', () => {
