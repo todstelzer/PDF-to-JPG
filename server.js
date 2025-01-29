@@ -8,7 +8,14 @@ const fs = require('fs');
 const pdf = require('pdf-poppler');
 
 const app = express();
-const upload = multer({ dest: 'uploads/' });
+const upload = multer({
+    dest: 'uploads/',
+    fileFilter: (req, file, cb) => {
+        if (file.mimetype === 'application/pdf') {
+            cb(null, true);
+        }
+    }
+});
 
 app.get('/', (req, res) => {
     res.sendFile(path.join(
@@ -35,27 +42,36 @@ app.use(express.static(isPackaged
   );
 
 // Handle conversion
-app.post('/convert', upload.single('pdf'), async (req, res) => {
+app.post('/convert', upload.array('files'), async (req, res) => {
     try {
-        const outputPath = req.body.folderPath || path.join(os.homedir(), 'Downloads'); // Update this line
-        const inputPath = req.file.path;
+        const outputPath = req.body.folderPath || path.join(os.homedir(), 'Downloads');
 
         // Create output directory if it doesn't exist
         if (!fs.existsSync(outputPath)) {
             fs.mkdirSync(outputPath, { recursive: true });
         }
 
-        // Convert PDF to JPG
-        await pdf.convert(inputPath, {
-            format: 'jpeg',
-            out_dir: outputPath,
-            out_prefix: 'page',
-            page: null,
-            poppler_path: path.join(process.pkg ? path.dirname(process.execPath) : __dirname, 'poppler', 'bin')
-        });
+        for (const file of req.files) {
+            const fileType = file.mimetype;
+            if (fileType !== 'application/pdf') {
+                fs.unlinkSync(file.path); // Remove the uploaded file
+                return res.status(400).send('Only PDF files are allowed.');
+            }
 
-        // Cleanup temporary file
-        fs.unlinkSync(inputPath);
+            const inputPath = file.path;
+
+            // Convert PDF to JPG
+            await pdf.convert(inputPath, {
+                format: 'jpeg',
+                out_dir: outputPath,
+                out_prefix: 'page',
+                page: null,
+                poppler_path: path.join(process.pkg ? path.dirname(process.execPath) : __dirname, 'poppler', 'bin')
+            });
+
+            // Cleanup temporary file
+            fs.unlinkSync(inputPath);
+        }
 
         res.send('Conversion successful! Check output folder.');
     } catch (error) {
