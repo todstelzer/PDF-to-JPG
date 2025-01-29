@@ -89,19 +89,26 @@ expressApp.post('/convert', upload.array('pdf', 10), (req, res) => {
         let hasValidFiles = false;
 
         req.files.forEach(file => {
-            if (!file.originalname.toLowerCase().endsWith('.pdf')) {
-                console.log('Discarding non-PDF file:', file.originalname);
-                fs.unlinkSync(file.path);
+            const filePath = path.join(__dirname, file.path);
+            const stats = fs.statSync(filePath);
+        
+            if (stats.isDirectory()) {
+                console.log('Ignoring directory:', file.originalname);
                 return;
             }
-
-            const inputPath = file.path;
-            const originalName = file.originalname.replace(/\.pdf$/i, '');
-            const outputFilePattern = path.join(outputPath, originalName);
-
-            console.log('Adding to queue:', { inputPath, outputPath, originalName });
-            conversionQueue.push({ inputPath, outputPath, originalName, res });
-            hasValidFiles = true;
+        
+            if (file.originalname.toLowerCase().endsWith('.pdf')) {
+                const inputPath = file.path;
+                const originalName = file.originalname.replace(/\.pdf$/i, '');
+                const outputFilePattern = path.join(outputPath, originalName);
+        
+                console.log('Adding to queue:', { inputPath, outputPath, originalName });
+                conversionQueue.push({ inputPath, outputPath, originalName, res });
+                hasValidFiles = true;
+            } else {
+                console.log('Discarding non-PDF file:', file.originalname);
+                fs.unlinkSync(file.path);
+            }
         });
 
         if (hasValidFiles && !isConverting) {
